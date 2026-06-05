@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriAI – AI-Powered Nutrition Analyzer</title>
+  <meta name="description" content="Upload your meal photo and get instant AI-powered nutritional analysis, smart meal recommendations, and daily dietary tracking." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥗</text></svg>" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║            NAVBAR                   ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="logo-icon">🥗</div>
+      <span class="logo-name">NutriAI</span>
+    </a>
+    <ul class="nav-links">
+      <li><button id="menu-scan">📷 Analyze</button></li>
+      <li><button id="menu-dash">📊 Dashboard</button></li>
+      <li><button id="menu-log">📋 Daily Log</button></li>
+      <li><button id="menu-rec">💡 Recommend</button></li>
+    </ul>
+    <span id="nav-pill">No meals logged yet</span>
+    <button id="theme-toggle" title="Toggle theme">☀</button>
+  </div>
+</nav>
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║              HERO                   ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<section class="hero" aria-label="Hero">
+  <div class="container">
+    <div class="hero-badge">
+      <span>✨</span> AI-Powered Nutrition Intelligence
+    </div>
+    <h1>
+      Know What<br/>
+      <span class="gradient-text">Your Food Contains</span>
+    </h1>
+    <p>
+      Upload a meal photo — our AI identifies every food item, computes precise nutritional values,
+      and crafts personalized recommendations tailored to your daily intake.
+    </p>
+    <div class="hero-cta-group">
+      <button class="btn-primary" id="hero-cta">📷 Analyze My Meal</button>
+      <button class="btn-secondary" id="demo-btn">⚡ Try Demo</button>
+    </div>
+    <!-- Animated counters -->
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-val" data-target="65" data-suffix="+">0+</span>
+        <span class="hero-stat-lbl">Food Items</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val" data-target="6" data-suffix=" macros">0 macros</span>
+        <span class="hero-stat-lbl">Tracked Per Meal</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val" data-target="98" data-suffix="%">0%</span>
+        <span class="hero-stat-lbl">Detection Accuracy</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val" data-target="24" data-suffix="/7">0/7</span>
+        <span class="hero-stat-lbl">Dietary Tracking</span>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║           UPLOAD SECTION            ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<section id="upload-section" aria-label="Meal Upload">
+  <div class="container">
+    <div class="section-title">
+      <div class="icon icon-upload">📷</div>
+      <div>
+        <h2>Analyze Your Meal</h2>
+        <p>Upload a food photo or drag & drop it below</p>
+      </div>
+    </div>
+    <div class="upload-area">
+      <!-- Drop Zone -->
+      <div id="drop-zone">
+        <span class="upload-icon">🍽</span>
+        <span class="upload-title">Drop your meal image here</span>
+        <span class="upload-sub">JPG, PNG, WEBP — up to 20 MB</span>
+        <div class="upload-actions">
+          <!-- Label directly triggers file input — works on all browsers / file:// protocol -->
+          <label for="file-input" class="btn-primary" id="upload-btn" style="cursor:pointer;">📂 Browse File</label>
+          <input type="file" id="file-input" accept="image/*" aria-label="Select meal image"
+                 style="position:absolute;left:-9999px;opacity:0;width:1px;height:1px;" />
+        </div>
+      </div>
+      <!-- Image Preview -->
+      <div id="image-preview">
+        <img id="preview-img" alt="Your uploaded meal" />
+        <p class="preview-label">🔍 Analyzing nutritional content…</p>
+      </div>
+    </div>
+    <!-- Feature chips -->
+    <div class="features-grid">
+      <div class="feature-chip"><span class="fc-icon">🤖</span> AI Food Recognition</div>
+      <div class="feature-chip"><span class="fc-icon">📊</span> Macro Breakdown</div>
+      <div class="feature-chip"><span class="fc-icon">🎯</span> Daily Goal Tracker</div>
+      <div class="feature-chip"><span class="fc-icon">💡</span> Smart Meal Suggestions</div>
+    </div>
+  </div>
+</section>
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║      SCANNER / LOADING STATE        ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<section id="scanner-section" aria-live="polite">
+  <div class="scanner-ring" role="status" aria-label="Analyzing image"></div>
+  <p class="scanner-text" id="scanner-loader">🔬 AI is analyzing your meal…</p>
+  <div class="scanner-steps">
+    <div class="scanner-step">🖼 Processing image</div>
+    <div class="scanner-step">→</div>
+    <div class="scanner-step">🧠 Identifying foods</div>
+    <div class="scanner-step">→</div>
+    <div class="scanner-step">📊 Computing nutrients</div>
+  </div>
+</section>
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║        RECOGNITION RESULTS          ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<section id="results-section" aria-label="Detected Foods" aria-live="polite">
+  <div class="container">
+    <div class="results-header">
+      <h2>🧠 Food Detected</h2>
+      <p>Select the portion size and add items to your daily log</p>
+    </div>
+    <div id="result-cards" role="list" aria-label="Detected food items"></div>
+  </div>
+</section>
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║         NUTRITION DASHBOARD         ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<section id="dashboard-section" aria-label="Nutrition Dashboard">
+  <div class="container">
+    <div class="section-title">
+      <div class="icon icon-dash">📊</div>
+      <div>
+        <h2>Nutrition Dashboard</h2>
+        <p>Your daily macronutrient breakdown and progress</p>
+      </div>
+    </div>
+    <!-- Top row: Donut + Gauge -->
+    <div class="dash-grid">
+      <!-- Macro Donut -->
+      <div class="glass-card donut-card">
+        <h3 style="margin-bottom:16px; font-size:0.9rem; color:var(--text-secondary);">Macro Split</h3>
+        <div class="donut-wrap">
+          <svg id="donut-svg" viewBox="0 0 180 180" aria-label="Macro distribution donut chart"></svg>
+          <div id="donut-center">
+            <span class="donut-cal">0</span>
+            <span class="donut-lbl">kcal</span>
+          </div>
+        </div>
+        <div class="donut-legend">
+          <div class="dl-item"><div class="dl-dot" style="background:#10b981"></div> Protein</div>
+          <div class="dl-item"><div class="dl-dot" style="background:#6366f1"></div> Carbs</div>
+          <div class="dl-item"><div class="dl-dot" style="background:#ec4899"></div> Fat</div>
+        </div>
+      </div>
+      <!-- Calorie Gauge + Bars -->
+      <div class="glass-card" style="display: flex; flex-direction: column; gap: 24px;">
+        <!-- Gauge -->
+        <div>
+          <h3 style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:12px;">Daily Calorie Goal</h3>
+          <div class="gauge-card">
+            <div class="gauge-wrap">
+              <svg id="gauge-svg" viewBox="0 0 200 120" aria-label="Calorie gauge"></svg>
+            </div>
+            <p id="gauge-pct">0% Daily Goal</p>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <!-- Macro Ratio Bar -->
+        <div>
+          <h3 style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:8px;">Protein · Carbs · Fat Ratio</h3>
+          <div id="macro-ratio"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Nutrient Progress Bars -->
+    <div class="glass-card" style="margin-top:20px;">
+      <h3 style="margin-bottom:20px; font-size:1rem;">Nutrient Progress</h3>
+      <div id="nutrient-bars" aria-label="Daily nutrient intake progress"></div>
+    </div>
+  </div>
+</section>
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║            DAILY LOG                ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<section id="log-section" aria-label="Daily Meal Log">
+  <div class="container">
+    <div class="log-header">
+      <div class="icon icon-log" style="width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">📋</div>
+      <div style="flex:1;">
+        <h2 style="margin:0;">Today's Food Log</h2>
+      </div>
+      <span class="meal-type-chip" id="meal-type-label">Meal Time</span>
+      <button id="clear-log-btn" type="button" aria-label="Clear all log entries">🗑 Clear All</button>
+    </div>
+    <p id="log-empty">
+      <span class="empty-icon">📭</span>
+      No meals logged today. Upload a photo or use the demo to get started!
+    </p>
+    <div id="log-list" role="list" aria-label="Logged meals"></div>
+  </div>
+</section>
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║          RECOMMENDATIONS            ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<section id="rec-section" aria-label="Meal Recommendations">
+  <div class="container">
+    <div class="section-title">
+      <div class="icon icon-rec">💡</div>
+      <div>
+        <h2>Smart Meal Recommendations</h2>
+        <p>Personalized suggestions based on your daily nutritional intake</p>
+      </div>
+    </div>
+    <p id="rec-insight" aria-live="polite">
+      Log your first meal to get personalized recommendations!
+    </p>
+    <div id="rec-grid" role="list" aria-label="Meal recommendations"></div>
+  </div>
+</section>
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║              FOOTER                 ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<footer role="contentinfo">
+  <div class="container">
+    <p>🥗 <strong>NutriAI</strong> — AI-Powered Nutrition Analyzer &amp; Smart Meal Recommender</p>
+    <p style="margin-top:6px;">
+      Nutritional values are approximate and based on standard food databases.
+      Consult a registered dietitian for medical dietary advice.
+    </p>
+  </div>
+</footer>
+<!-- ╔══════════════════════════════════════╗ -->
+<!-- ║         JAVASCRIPT MODULES          ║ -->
+<!-- ╚══════════════════════════════════════╝ -->
+<script src="js/foodData.js"></script>
+<script src="js/tracker.js"></script>
+<script src="js/recognizer.js"></script>
+<script src="js/recommender.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
